@@ -1,0 +1,22 @@
+class Resource {
+    String name;
+    Resource(String name) { this.name = name; }
+    synchronized void use(Resource other) {
+        System.out.println(Thread.currentThread().getName() + " using " + name + " and waiting for " + other.name);
+        try { Thread.sleep(100); } catch (InterruptedException e) {}
+        other.action();
+    }
+    synchronized void action() {
+        System.out.println(Thread.currentThread().getName() + " performing action on " + name);
+    }
+}
+public class DeadlockDemo {
+    public static void main(String[] args) {
+        Resource r1 = new Resource("R1");
+        Resource r2 = new Resource("R2");
+        Thread t1 = new Thread(() -> r1.use(r2), "Thread-1");
+        Thread t2 = new Thread(() -> r2.use(r1), "Thread-2");
+        t1.start();
+        t2.start();
+    }
+}
